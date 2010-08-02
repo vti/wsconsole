@@ -9,6 +9,7 @@ require File::Basename;
 use IO::Poll qw/POLLIN/;
 use Mojo::Client;
 use Mojo::IOLoop;
+use Mojo::ByteStream 'b';
 
 my $address = shift @ARGV;
 my $basename = File::Basename::basename($0);
@@ -28,12 +29,18 @@ $client->async->websocket(
 
         if ($tx->has_error) {
             warn "Error: " . join(' ', $self->tx->error);
-            return;
+            return $loop->stop;
         }
 
         print "Connected\nw> ";
 
-        $self->finished(sub { print "Disconnected\n" });
+        $self->finished(
+            sub {
+                print "Disconnected\n";
+
+                $loop->stop;
+            }
+        );
 
         $self->receive_message(
             sub {
@@ -58,7 +65,7 @@ $client->async->websocket(
                         print ' > ';
                     }
 
-                    $tx->send_message($message);
+                    $tx->send_message(b($message)->decode('UTF-8'));
                 }
             }
         );
