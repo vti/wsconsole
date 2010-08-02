@@ -1,0 +1,3 @@
+[submodule "mojo"]
+	path = mojo
+	url = http://github.com/kraih/mojo.git

@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+BEGIN { use lib 'mojo/lib'; };
+
 $| = 1;
 
 require File::Basename;
